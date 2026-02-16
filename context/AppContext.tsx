@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { StateName, TermName } from '../data/types';
+import { useLocationState } from '../hooks/useLocationState';
+import { useHolidayNotifications } from '../hooks/useHolidayNotifications';
 
 interface AppContextType {
   selectedState: StateName;
@@ -18,6 +20,17 @@ const AppContext = createContext<AppContextType>({
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [selectedState, setSelectedState] = useState<StateName>('NSW');
   const [selectedTerm, setSelectedTerm] = useState<TermName | 'All'>('All');
+  const { detectedState } = useLocationState();
+
+  // Auto-select state based on location (only on first detection)
+  useEffect(() => {
+    if (detectedState) {
+      setSelectedState(detectedState);
+    }
+  }, [detectedState]);
+
+  // Schedule notifications whenever selected state changes
+  useHolidayNotifications(selectedState);
 
   return (
     <AppContext.Provider value={{ selectedState, setSelectedState, selectedTerm, setSelectedTerm }}>
