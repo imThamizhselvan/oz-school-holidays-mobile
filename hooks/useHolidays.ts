@@ -1,21 +1,21 @@
 import { useMemo } from 'react';
 import type { StateName, TermName, SchoolHolidayPeriod } from '../data/types';
-import { schoolHolidays2026, publicHolidays2026 } from '../data/holidays';
+import { getSchoolHolidays, getPublicHolidays } from '../data/holidays';
 
-export function useHolidays(selectedState: StateName, selectedTerm: TermName | 'All') {
+export function useHolidays(selectedState: StateName, selectedTerm: TermName | 'All', year: number = 2026) {
   const holidays = useMemo(() => {
-    const allHolidays = schoolHolidays2026[selectedState];
+    const allHolidays = getSchoolHolidays(year)[selectedState];
     if (selectedTerm === 'All') return allHolidays;
     return allHolidays.filter(h => h.term === selectedTerm);
-  }, [selectedState, selectedTerm]);
+  }, [selectedState, selectedTerm, year]);
 
   const publicHolidays = useMemo(() => {
-    return publicHolidays2026[selectedState];
-  }, [selectedState]);
+    return getPublicHolidays(year)[selectedState];
+  }, [selectedState, year]);
 
   const allHolidayDates = useMemo(() => {
     const dates = new Set<string>();
-    const allHolidays = schoolHolidays2026[selectedState];
+    const allHolidays = getSchoolHolidays(year)[selectedState];
     for (const period of allHolidays) {
       const start = new Date(period.startDate);
       const end = new Date(period.endDate);
@@ -24,7 +24,7 @@ export function useHolidays(selectedState: StateName, selectedTerm: TermName | '
       }
     }
     return dates;
-  }, [selectedState]);
+  }, [selectedState, year]);
 
   const filteredHolidayDates = useMemo(() => {
     const dates = new Set<string>();
@@ -51,7 +51,7 @@ export function useHolidays(selectedState: StateName, selectedTerm: TermName | '
     today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString().split('T')[0];
 
-    const allHolidays = schoolHolidays2026[selectedState];
+    const allHolidays = getSchoolHolidays(year)[selectedState];
     for (const period of allHolidays) {
       if (todayStr >= period.startDate && todayStr <= period.endDate) {
         const end = new Date(period.endDate);
@@ -79,7 +79,7 @@ export function useHolidays(selectedState: StateName, selectedTerm: TermName | '
     return nearest
       ? { isOnHoliday: false, period: nearest, daysUntil: minDays, daysLeft: 0 }
       : null;
-  }, [selectedState]);
+  }, [selectedState, year]);
 
   return {
     holidays,

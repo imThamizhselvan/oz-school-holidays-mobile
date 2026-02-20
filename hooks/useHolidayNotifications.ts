@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
-import { schoolHolidays2026 } from '../data/holidays';
+import { getSchoolHolidays } from '../data/holidays';
 import type { StateName } from '../data/types';
 
 async function registerForNotifications() {
@@ -33,18 +33,25 @@ async function registerForNotifications() {
   return true;
 }
 
-export function useHolidayNotifications(selectedState: StateName) {
+export function useHolidayNotifications(
+  selectedState: StateName,
+  year: number = 2026,
+  notificationsEnabled: boolean = true,
+  notifyDaysBefore: number = 1,
+) {
   useEffect(() => {
     let cancelled = false;
 
     async function schedule() {
+      // Always clear first so disabling notifications also cancels scheduled ones
+      await Notifications.cancelAllScheduledNotificationsAsync();
+
+      if (!notificationsEnabled) return;
+
       const granted = await registerForNotifications();
       if (!granted || cancelled) return;
 
-      // Clear previously scheduled notifications
-      await Notifications.cancelAllScheduledNotificationsAsync();
-
-      const holidays = schoolHolidays2026[selectedState];
+      const holidays = getSchoolHolidays(year)[selectedState];
       const now = new Date();
 
       for (const holiday of holidays) {
@@ -54,18 +61,19 @@ export function useHolidayNotifications(selectedState: StateName) {
           (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
         ) + 1;
 
-        // Schedule 1 day before the holiday starts (at 9am)
+        // Schedule N days before the holiday starts at 9am
         const trigger = new Date(start);
-        trigger.setDate(trigger.getDate() - 1);
+        trigger.setDate(trigger.getDate() - notifyDaysBefore);
         trigger.setHours(9, 0, 0, 0);
 
         // Only schedule future notifications
         if (trigger <= now) continue;
 
+        const daysLabel = notifyDaysBefore === 1 ? 'tomorrow' : `in ${notifyDaysBefore} days`;
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: `${holiday.termLabel} starts tomorrow!`,
-            body: `Enjoy ${days} days off. ${holiday.termLabel} runs from ${formatDate(start)} to ${formatDate(end)}.`,
+            title: `${holiday.termLabel} starts ${daysLabel}!`,
+            body: `Enjoy ${days} days off from ${formatDate(start)} to ${formatDate(end)}.`,
             sound: true,
           },
           trigger: {
@@ -79,7 +87,7 @@ export function useHolidayNotifications(selectedState: StateName) {
 
     schedule();
     return () => { cancelled = true; };
-  }, [selectedState]);
+  }, [selectedState, year, notificationsEnabled, notifyDaysBefore]);
 }
 
 function formatDate(date: Date): string {

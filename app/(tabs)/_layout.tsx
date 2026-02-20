@@ -2,10 +2,11 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppContext } from '../../context/AppContext';
 import { HeaderStateSelector } from '../../components/HeaderStateSelector';
+import { HeaderYearSelector } from '../../components/HeaderYearSelector';
 import { colors } from '../../constants/theme';
 
 export default function TabLayout() {
-  const { selectedState, setSelectedState } = useAppContext();
+  const { selectedState, setSelectedState, selectedYear, setSelectedYear } = useAppContext();
 
   return (
     <Tabs
@@ -13,6 +14,13 @@ export default function TabLayout() {
         headerStyle: { backgroundColor: colors.headerBg },
         headerTintColor: colors.white,
         headerTitleStyle: { fontWeight: '700' },
+        headerLeft: () => (
+          <HeaderYearSelector
+            selectedYear={selectedYear}
+            onSelect={setSelectedYear}
+          />
+        ),
+        headerLeftContainerStyle: { paddingLeft: 16 },
         headerRight: () => (
           <HeaderStateSelector
             selectedState={selectedState}
@@ -32,7 +40,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          headerTitle: 'School Holidays 2026',
+          headerTitle: `School Holidays ${selectedYear}`,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -65,6 +73,16 @@ export default function TabLayout() {
           headerTitle: 'Public Holidays',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="flag" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          headerTitle: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
           ),
         }}
       />

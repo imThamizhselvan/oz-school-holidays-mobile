@@ -7,8 +7,8 @@ import { PublicHolidayItem } from '../../components/PublicHolidayItem';
 import { colors, spacing, radius, shadow } from '../../constants/theme';
 
 export default function PublicHolidaysScreen() {
-  const { selectedState, setSelectedState } = useAppContext();
-  const { publicHolidays } = useHolidays(selectedState, 'All');
+  const { selectedState, setSelectedState, selectedYear } = useAppContext();
+  const { publicHolidays } = useHolidays(selectedState, 'All', selectedYear);
   const stateInfo = states.find(s => s.code === selectedState)!;
 
   const national = publicHolidays.filter(ph => ph.isNational);

@@ -7,8 +7,8 @@ import { Countdown } from '../../components/Countdown';
 import { colors, spacing, radius, shadow } from '../../constants/theme';
 
 export default function HomeScreen() {
-  const { selectedState, setSelectedState } = useAppContext();
-  const { holidays, nextHoliday, publicHolidays } = useHolidays(selectedState, 'All');
+  const { selectedState, setSelectedState, selectedYear } = useAppContext();
+  const { holidays, nextHoliday, publicHolidays } = useHolidays(selectedState, 'All', selectedYear);
   const stateInfo = states.find(s => s.code === selectedState)!;
 
   return (
@@ -22,7 +22,7 @@ export default function HomeScreen() {
         <Countdown nextHoliday={nextHoliday} stateColor={stateInfo.color} />
 
         <View style={[styles.summaryCard, { ...shadow.sm }]}>
-          <Text style={styles.summaryTitle}>2026 Overview</Text>
+          <Text style={styles.summaryTitle}>{selectedYear} Overview</Text>
           <View style={styles.summaryRow}>
             <View style={styles.summaryItem}>
               <Text style={[styles.summaryNumber, { color: stateInfo.color }]}>

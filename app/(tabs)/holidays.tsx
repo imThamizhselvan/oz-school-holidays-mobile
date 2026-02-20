@@ -8,8 +8,8 @@ import { HolidayCard } from '../../components/HolidayCard';
 import { colors, spacing } from '../../constants/theme';
 
 export default function HolidaysScreen() {
-  const { selectedState, setSelectedState, selectedTerm, setSelectedTerm } = useAppContext();
-  const { holidays, publicHolidays } = useHolidays(selectedState, selectedTerm);
+  const { selectedState, setSelectedState, selectedTerm, setSelectedTerm, selectedYear } = useAppContext();
+  const { holidays, publicHolidays } = useHolidays(selectedState, selectedTerm, selectedYear);
   const stateInfo = states.find(s => s.code === selectedState)!;
 
   return (

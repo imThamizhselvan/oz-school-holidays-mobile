@@ -10,8 +10,8 @@ import { colors, spacing, radius } from '../../constants/theme';
 const MONTHS = Array.from({ length: 12 }, (_, i) => i);
 
 export default function CalendarScreen() {
-  const { selectedState, setSelectedState, selectedTerm, setSelectedTerm } = useAppContext();
-  const { filteredHolidayDates, publicHolidayDates } = useHolidays(selectedState, selectedTerm);
+  const { selectedState, setSelectedState, selectedTerm, setSelectedTerm, selectedYear } = useAppContext();
+  const { filteredHolidayDates, publicHolidayDates } = useHolidays(selectedState, selectedTerm, selectedYear);
   const stateInfo = states.find(s => s.code === selectedState)!;
 
   return (
@@ -37,7 +37,7 @@ export default function CalendarScreen() {
         {MONTHS.map(month => (
           <MonthCalendar
             key={month}
-            year={2026}
+            year={selectedYear}
             month={month}
             holidayDates={filteredHolidayDates}
             publicHolidayDates={publicHolidayDates}
