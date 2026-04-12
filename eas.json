@@ -1,0 +1,30 @@
+{
+  "cli": {
+    "version": ">= 15.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "track": "production"
+      },
+      "ios": {
+        "appleId": "dev@fidisys.com",
+        "ascAppId": "6762077511",
+        "appleTeamId": "94XLMMA43P"
+      }
+    }
+  }
+}

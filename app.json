@@ -2,11 +2,11 @@
   "expo": {
     "name": "australia-school-holidays-mobile",
     "slug": "australia-school-holidays-mobile",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "scheme": "au-school-holidays",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -14,12 +14,15 @@
       "backgroundColor": "#1a2332"
     },
     "ios": {
+      "bundleIdentifier": "com.imthamil.ozschoolholidays",
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "We use your location to auto-detect your Australian state and show relevant school holidays."
+        "NSLocationWhenInUseUsageDescription": "We use your location to auto-detect your Australian state and show relevant school holidays.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
+      "package": "au.com.schoolholidays.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -27,9 +30,9 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "POST_NOTIFICATIONS"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -49,6 +52,13 @@
           "icon": "./assets/icon.png"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7eba9a93-b353-4330-b34e-ce5d3848c99d"
+      }
+    },
+    "owner": "imthamizhselvan"
   }
 }
