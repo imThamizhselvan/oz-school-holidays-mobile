@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   ScrollView,
   View,
@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppContext } from '../../context/AppContext';
-import { colors, spacing, radius, shadow } from '../../constants/theme';
+import { useTheme } from '../../hooks/useTheme';
+import { spacing, radius, shadow } from '../../constants/theme';
 import Constants from 'expo-constants';
 
 const NOTIFY_OPTIONS: { label: string; description: string; days: number }[] = [
@@ -25,18 +26,47 @@ export default function SettingsScreen() {
     setNotificationsEnabled,
     notifyDaysBefore,
     setNotifyDaysBefore,
+    isDarkMode,
+    setIsDarkMode,
   } = useAppContext();
+  const colors = useTheme();
+
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+
+      {/* Appearance section */}
+      <Text style={styles.sectionLabel}>APPEARANCE</Text>
+      <View style={[styles.card, shadow.sm]}>
+        <View style={styles.row}>
+          <View style={styles.rowLeft}>
+            <View style={[styles.iconWrap, { backgroundColor: isDarkMode ? '#1e3a5f' : '#e0e7ff' }]}>
+              <Ionicons name={isDarkMode ? 'moon' : 'sunny'} size={18} color={isDarkMode ? '#93c5fd' : '#4f46e5'} />
+            </View>
+            <View>
+              <Text style={styles.rowTitle}>Dark Mode</Text>
+              <Text style={styles.rowSubtitle}>
+                {isDarkMode ? 'Dark theme enabled' : 'Light theme enabled'}
+              </Text>
+            </View>
+          </View>
+          <Switch
+            value={isDarkMode}
+            onValueChange={setIsDarkMode}
+            trackColor={{ false: colors.border, true: '#4A90D9' }}
+            thumbColor={colors.white}
+          />
+        </View>
+      </View>
 
       {/* Notifications section */}
       <Text style={styles.sectionLabel}>NOTIFICATIONS</Text>
       <View style={[styles.card, shadow.sm]}>
         <View style={styles.row}>
           <View style={styles.rowLeft}>
-            <View style={[styles.iconWrap, { backgroundColor: '#dbeafe' }]}>
-              <Ionicons name="notifications" size={18} color="#1e40af" />
+            <View style={[styles.iconWrap, { backgroundColor: colors.nationalBadgeBg }]}>
+              <Ionicons name="notifications" size={18} color={colors.nationalBadge} />
             </View>
             <View>
               <Text style={styles.rowTitle}>Holiday Reminders</Text>
@@ -54,7 +84,6 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* Timing section — only shown when notifications are enabled */}
       {notificationsEnabled && (
         <>
           <Text style={styles.sectionLabel}>NOTIFY ME</Text>
@@ -120,121 +149,123 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    paddingBottom: spacing.xl,
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    letterSpacing: 0.8,
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xs,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    marginHorizontal: spacing.md,
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 14,
-  },
-  rowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    flex: 1,
-  },
-  iconWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rowTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  rowSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 1,
-  },
-  rowValue: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 14,
-  },
-  optionBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  optionText: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  optionTitleActive: {
-    fontWeight: '700',
-    color: '#1e40af',
-  },
-  optionSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  radio: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: spacing.sm,
-  },
-  radioActive: {
-    borderColor: '#4A90D9',
-  },
-  radioDot: {
-    width: 11,
-    height: 11,
-    borderRadius: 6,
-    backgroundColor: '#4A90D9',
-  },
-  infoBox: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.xs,
-    marginHorizontal: spacing.md,
-    marginTop: spacing.sm,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: 12,
-    color: colors.textSecondary,
-    lineHeight: 18,
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    content: {
+      paddingBottom: spacing.xl,
+    },
+    sectionLabel: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: colors.textSecondary,
+      letterSpacing: 0.8,
+      paddingHorizontal: spacing.md,
+      paddingTop: spacing.lg,
+      paddingBottom: spacing.xs,
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      marginHorizontal: spacing.md,
+      overflow: 'hidden',
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.md,
+      paddingVertical: 14,
+    },
+    rowLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      flex: 1,
+    },
+    iconWrap: {
+      width: 34,
+      height: 34,
+      borderRadius: radius.sm,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    rowTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    rowSubtitle: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginTop: 1,
+    },
+    rowValue: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
+    optionRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.md,
+      paddingVertical: 14,
+    },
+    optionBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    optionText: {
+      flex: 1,
+    },
+    optionTitle: {
+      fontSize: 15,
+      fontWeight: '500',
+      color: colors.text,
+    },
+    optionTitleActive: {
+      fontWeight: '700',
+      color: '#4A90D9',
+    },
+    optionSubtitle: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
+    radio: {
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      borderWidth: 2,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: spacing.sm,
+    },
+    radioActive: {
+      borderColor: '#4A90D9',
+    },
+    radioDot: {
+      width: 11,
+      height: 11,
+      borderRadius: 6,
+      backgroundColor: '#4A90D9',
+    },
+    infoBox: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: spacing.xs,
+      marginHorizontal: spacing.md,
+      marginTop: spacing.sm,
+    },
+    infoText: {
+      flex: 1,
+      fontSize: 12,
+      color: colors.textSecondary,
+      lineHeight: 18,
+    },
+  });
+}

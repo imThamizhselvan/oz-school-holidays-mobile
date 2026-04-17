@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -8,7 +8,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius } from '../constants/theme';
+import { useTheme } from '../hooks/useTheme';
+import { spacing, radius } from '../constants/theme';
 
 const YEARS = [2026, 2027];
 
@@ -19,6 +20,8 @@ interface Props {
 
 export function HeaderYearSelector({ selectedYear, onSelect }: Props) {
   const [open, setOpen] = useState(false);
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <>
@@ -28,7 +31,7 @@ export function HeaderYearSelector({ selectedYear, onSelect }: Props) {
         activeOpacity={0.7}
       >
         <Text style={styles.triggerText}>{selectedYear}</Text>
-        <Ionicons name="chevron-down" size={14} color={colors.white} />
+        <Ionicons name="chevron-down" size={14} color="#ffffff" />
       </TouchableOpacity>
 
       <Modal
@@ -68,60 +71,62 @@ export function HeaderYearSelector({ selectedYear, onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  trigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: radius.full,
-    gap: 6,
-  },
-  triggerText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-  },
-  sheetTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.sm,
-    marginBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radius.sm,
-  },
-  optionActive: {
-    backgroundColor: colors.bg,
-  },
-  optionText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  optionTextActive: {
-    color: colors.text,
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    trigger: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255,255,255,0.12)',
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: radius.full,
+      gap: 6,
+    },
+    triggerText: {
+      color: '#ffffff',
+      fontSize: 15,
+      fontWeight: '700',
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      paddingHorizontal: spacing.lg,
+    },
+    sheet: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.sm,
+    },
+    sheetTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.text,
+      paddingHorizontal: spacing.sm,
+      paddingBottom: spacing.sm,
+      marginBottom: spacing.xs,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    option: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 14,
+      paddingHorizontal: spacing.sm,
+      borderRadius: radius.sm,
+    },
+    optionActive: {
+      backgroundColor: colors.bg,
+    },
+    optionText: {
+      fontSize: 17,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    optionTextActive: {
+      color: colors.text,
+    },
+  });
+}

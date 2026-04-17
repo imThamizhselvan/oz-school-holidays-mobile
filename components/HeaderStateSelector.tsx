@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -10,7 +10,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { states } from '../data/holidays';
 import type { StateName } from '../data/types';
-import { colors, spacing, radius } from '../constants/theme';
+import { useTheme } from '../hooks/useTheme';
+import { spacing, radius } from '../constants/theme';
 
 interface Props {
   selectedState: StateName;
@@ -19,6 +20,8 @@ interface Props {
 
 export function HeaderStateSelector({ selectedState, onSelect }: Props) {
   const [open, setOpen] = useState(false);
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const stateInfo = states.find((s) => s.code === selectedState)!;
 
   return (
@@ -30,7 +33,7 @@ export function HeaderStateSelector({ selectedState, onSelect }: Props) {
       >
         <View style={[styles.dot, { backgroundColor: stateInfo.color }]} />
         <Text style={styles.triggerText}>{stateInfo.code}</Text>
-        <Ionicons name="chevron-down" size={14} color={colors.white} />
+        <Ionicons name="chevron-down" size={14} color="#ffffff" />
       </TouchableOpacity>
 
       <Modal
@@ -59,7 +62,7 @@ export function HeaderStateSelector({ selectedState, onSelect }: Props) {
                     <Text style={[styles.optionCode, isActive && styles.optionCodeActive]}>
                       {state.code}
                     </Text>
-                    <Text style={[styles.optionName, isActive && styles.optionNameActive]}>
+                    <Text style={styles.optionName}>
                       {state.fullName}
                     </Text>
                   </View>
@@ -76,81 +79,80 @@ export function HeaderStateSelector({ selectedState, onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  trigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: radius.full,
-    gap: 6,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  triggerText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-  },
-  sheetTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.sm,
-    marginBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radius.sm,
-  },
-  optionActive: {
-    backgroundColor: colors.bg,
-  },
-  optionDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  optionText: {
-    flex: 1,
-  },
-  optionCode: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  optionCodeActive: {
-    color: colors.text,
-  },
-  optionName: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginTop: 1,
-  },
-  optionNameActive: {
-    color: colors.textSecondary,
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    trigger: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255,255,255,0.12)',
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: radius.full,
+      gap: 6,
+    },
+    dot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+    },
+    triggerText: {
+      color: '#ffffff',
+      fontSize: 15,
+      fontWeight: '700',
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      paddingHorizontal: spacing.lg,
+    },
+    sheet: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.sm,
+    },
+    sheetTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.text,
+      paddingHorizontal: spacing.sm,
+      paddingBottom: spacing.sm,
+      marginBottom: spacing.xs,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    option: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: spacing.sm,
+      borderRadius: radius.sm,
+    },
+    optionActive: {
+      backgroundColor: colors.bg,
+    },
+    optionDot: {
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      marginRight: 12,
+    },
+    optionText: {
+      flex: 1,
+    },
+    optionCode: {
+      fontSize: 15,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    optionCodeActive: {
+      color: colors.text,
+    },
+    optionName: {
+      fontSize: 13,
+      color: colors.textSecondary,
+      marginTop: 1,
+    },
+  });
+}

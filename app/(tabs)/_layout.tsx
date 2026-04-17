@@ -1,18 +1,19 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppContext } from '../../context/AppContext';
+import { useTheme } from '../../hooks/useTheme';
 import { HeaderStateSelector } from '../../components/HeaderStateSelector';
 import { HeaderYearSelector } from '../../components/HeaderYearSelector';
-import { colors } from '../../constants/theme';
 
 export default function TabLayout() {
   const { selectedState, setSelectedState, selectedYear, setSelectedYear } = useAppContext();
+  const colors = useTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerStyle: { backgroundColor: colors.headerBg },
-        headerTintColor: colors.white,
+        headerTintColor: '#ffffff',
         headerTitleStyle: { fontWeight: '700' },
         headerLeft: () => (
           <HeaderYearSelector

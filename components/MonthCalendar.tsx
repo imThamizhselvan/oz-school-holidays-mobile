@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, radius, shadow } from '../constants/theme';
+import { useTheme } from '../hooks/useTheme';
+import { spacing, radius, shadow } from '../constants/theme';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -13,12 +14,14 @@ interface Props {
 }
 
 export function MonthCalendar({ year, month, holidayDates, publicHolidayDates, stateColor }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const monthName = new Date(year, month).toLocaleString('en-AU', { month: 'long' });
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const daysInMonth = lastDay.getDate();
 
-  // Monday = 0, Sunday = 6
   let startDow = firstDay.getDay() - 1;
   if (startDow < 0) startDow = 6;
 
@@ -28,7 +31,6 @@ export function MonthCalendar({ year, month, holidayDates, publicHolidayDates, s
 
   const cells: React.ReactNode[] = [];
 
-  // Empty cells before first day
   for (let i = 0; i < startDow; i++) {
     cells.push(<View key={`empty-${i}`} style={styles.cell} />);
   }
@@ -71,64 +73,64 @@ export function MonthCalendar({ year, month, holidayDates, publicHolidayDates, s
   );
 }
 
-const CELL_SIZE = 40;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.md,
-  },
-  monthTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  weekdayRow: {
-    flexDirection: 'row',
-    marginBottom: 4,
-  },
-  weekdayText: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  cell: {
-    width: '14.285%',
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    position: 'relative',
-  },
-  dayText: {
-    fontSize: 13,
-    color: colors.text,
-  },
-  todayCell: {
-    borderWidth: 2,
-    borderColor: colors.text,
-    borderRadius: 20,
-  },
-  todayText: {
-    fontWeight: '700',
-  },
-  publicDot: {
-    position: 'absolute',
-    bottom: 2,
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: colors.publicHoliday,
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    container: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      padding: spacing.md,
+      marginHorizontal: spacing.md,
+      marginBottom: spacing.md,
+    },
+    monthTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.text,
+      textAlign: 'center',
+      marginBottom: spacing.sm,
+    },
+    weekdayRow: {
+      flexDirection: 'row',
+      marginBottom: 4,
+    },
+    weekdayText: {
+      flex: 1,
+      textAlign: 'center',
+      fontSize: 11,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    grid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    cell: {
+      width: '14.285%',
+      aspectRatio: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 4,
+      position: 'relative',
+    },
+    dayText: {
+      fontSize: 13,
+      color: colors.text,
+    },
+    todayCell: {
+      borderWidth: 2,
+      borderColor: colors.text,
+      borderRadius: 20,
+    },
+    todayText: {
+      fontWeight: '700',
+    },
+    publicDot: {
+      position: 'absolute',
+      bottom: 2,
+      width: 5,
+      height: 5,
+      borderRadius: 2.5,
+      backgroundColor: colors.publicHoliday,
+    },
+  });
+}

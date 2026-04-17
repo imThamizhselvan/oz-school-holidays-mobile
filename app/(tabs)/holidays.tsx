@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, View, StyleSheet } from 'react-native';
 import { useAppContext } from '../../context/AppContext';
 import { useHolidays } from '../../hooks/useHolidays';
+import { useTheme } from '../../hooks/useTheme';
 import { states } from '../../data/holidays';
 import { TermFilter } from '../../components/TermFilter';
 import { HolidayCard } from '../../components/HolidayCard';
-import { colors, spacing } from '../../constants/theme';
+import { spacing } from '../../constants/theme';
 
 export default function HolidaysScreen() {
-  const { selectedState, setSelectedState, selectedTerm, setSelectedTerm, selectedYear } = useAppContext();
+  const { selectedState, selectedTerm, setSelectedTerm, selectedYear } = useAppContext();
+  const colors = useTheme();
   const { holidays, publicHolidays } = useHolidays(selectedState, selectedTerm, selectedYear);
   const stateInfo = states.find(s => s.code === selectedState)!;
+
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <View style={styles.container}>
@@ -31,13 +35,15 @@ export default function HolidaysScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  list: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xl,
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    list: {
+      paddingTop: spacing.sm,
+      paddingBottom: spacing.xl,
+    },
+  });
+}

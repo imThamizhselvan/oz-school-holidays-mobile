@@ -7,6 +7,7 @@ import { useHolidayNotifications } from '../hooks/useHolidayNotifications';
 const STORAGE_KEYS = {
   notificationsEnabled: '@settings_notifications_enabled',
   notifyDaysBefore: '@settings_notify_days_before',
+  darkMode: '@settings_dark_mode',
 };
 
 interface AppContextType {
@@ -20,6 +21,8 @@ interface AppContextType {
   setNotificationsEnabled: (enabled: boolean) => void;
   notifyDaysBefore: number;
   setNotifyDaysBefore: (days: number) => void;
+  isDarkMode: boolean;
+  setIsDarkMode: (enabled: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -33,6 +36,8 @@ const AppContext = createContext<AppContextType>({
   setNotificationsEnabled: () => {},
   notifyDaysBefore: 1,
   setNotifyDaysBefore: () => {},
+  isDarkMode: false,
+  setIsDarkMode: () => {},
 });
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -41,18 +46,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [notificationsEnabled, setNotificationsEnabledState] = useState(true);
   const [notifyDaysBefore, setNotifyDaysBeforeState] = useState(1);
+  const [isDarkMode, setIsDarkModeState] = useState(false);
   const { detectedState } = useLocationState();
 
-  // Load persisted settings on mount
   useEffect(() => {
     async function loadSettings() {
       try {
-        const [enabled, days] = await Promise.all([
+        const [enabled, days, darkMode] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.notificationsEnabled),
           AsyncStorage.getItem(STORAGE_KEYS.notifyDaysBefore),
+          AsyncStorage.getItem(STORAGE_KEYS.darkMode),
         ]);
         if (enabled !== null) setNotificationsEnabledState(enabled === 'true');
         if (days !== null) setNotifyDaysBeforeState(parseInt(days, 10));
+        if (darkMode !== null) setIsDarkModeState(darkMode === 'true');
       } catch {}
     }
     loadSettings();
@@ -68,14 +75,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.setItem(STORAGE_KEYS.notifyDaysBefore, String(days));
   }, []);
 
-  // Auto-select state based on location (only on first detection)
+  const setIsDarkMode = useCallback((enabled: boolean) => {
+    setIsDarkModeState(enabled);
+    AsyncStorage.setItem(STORAGE_KEYS.darkMode, String(enabled));
+  }, []);
+
   useEffect(() => {
     if (detectedState) {
       setSelectedState(detectedState);
     }
   }, [detectedState]);
 
-  // Schedule notifications whenever relevant settings change
   useHolidayNotifications(selectedState, selectedYear, notificationsEnabled, notifyDaysBefore);
 
   return (
@@ -85,6 +95,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       selectedYear, setSelectedYear,
       notificationsEnabled, setNotificationsEnabled,
       notifyDaysBefore, setNotifyDaysBefore,
+      isDarkMode, setIsDarkMode,
     }}>
       {children}
     </AppContext.Provider>

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, radius, shadow } from '../constants/theme';
+import { useTheme } from '../hooks/useTheme';
+import { spacing, radius, shadow } from '../constants/theme';
 
 interface NextHoliday {
   isOnHoliday: boolean;
@@ -29,6 +30,9 @@ function formatDate(dateStr: string): string {
 }
 
 export function Countdown({ nextHoliday, stateColor }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   if (!nextHoliday) {
     return (
       <View style={[styles.card, { ...shadow.md }]}>
@@ -41,8 +45,8 @@ export function Countdown({ nextHoliday, stateColor }: Props) {
 
   return (
     <View style={[styles.card, { ...shadow.md }]}>
-      <View style={[styles.badge, { backgroundColor: isOnHoliday ? stateColor : '#dbeafe' }]}>
-        <Text style={[styles.badgeText, { color: isOnHoliday ? '#fff' : '#1e40af' }]}>
+      <View style={[styles.badge, { backgroundColor: isOnHoliday ? stateColor : colors.nationalBadgeBg }]}>
+        <Text style={[styles.badgeText, { color: isOnHoliday ? '#fff' : colors.nationalBadge }]}>
           {isOnHoliday ? 'On Holiday!' : 'Next Holiday'}
         </Text>
       </View>
@@ -62,49 +66,51 @@ export function Countdown({ nextHoliday, stateColor }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.sm,
-    alignItems: 'center',
-  },
-  badge: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: radius.full,
-    marginBottom: spacing.md,
-  },
-  badgeText: {
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  bigNumber: {
-    fontSize: 64,
-    fontWeight: '800',
-    lineHeight: 72,
-  },
-  daysLabel: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  periodLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  dates: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  noHoliday: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      padding: spacing.lg,
+      marginHorizontal: spacing.md,
+      marginVertical: spacing.sm,
+      alignItems: 'center',
+    },
+    badge: {
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs,
+      borderRadius: radius.full,
+      marginBottom: spacing.md,
+    },
+    badgeText: {
+      fontSize: 13,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    bigNumber: {
+      fontSize: 64,
+      fontWeight: '800',
+      lineHeight: 72,
+    },
+    daysLabel: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      marginBottom: spacing.md,
+    },
+    periodLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    dates: {
+      fontSize: 13,
+      color: colors.textSecondary,
+    },
+    noHoliday: {
+      fontSize: 16,
+      color: colors.textSecondary,
+    },
+  });
+}

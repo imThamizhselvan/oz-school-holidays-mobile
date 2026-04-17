@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import type { TermName } from '../data/types';
-import { colors, spacing, radius } from '../constants/theme';
+import { useTheme } from '../hooks/useTheme';
+import { spacing, radius } from '../constants/theme';
 
 const terms: { key: TermName | 'All'; label: string }[] = [
   { key: 'All', label: 'All' },
@@ -18,6 +19,9 @@ interface Props {
 }
 
 export function TermFilter({ selectedTerm, onSelect, stateColor }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <View style={styles.container}>
       <View style={styles.segmented}>
@@ -47,37 +51,39 @@ export function TermFilter({ selectedTerm, onSelect, stateColor }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  segmented: {
-    flexDirection: 'row',
-    backgroundColor: colors.border,
-    borderRadius: radius.sm,
-    padding: 3,
-  },
-  segment: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: 'center',
-    borderRadius: radius.sm - 2,
-  },
-  segmentActive: {
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 2,
-  },
-  segmentText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  segmentTextActive: {
-    color: colors.white,
-    fontWeight: '700',
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+    },
+    segmented: {
+      flexDirection: 'row',
+      backgroundColor: colors.border,
+      borderRadius: radius.sm,
+      padding: 3,
+    },
+    segment: {
+      flex: 1,
+      paddingVertical: 8,
+      alignItems: 'center',
+      borderRadius: radius.sm - 2,
+    },
+    segmentActive: {
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.15,
+      shadowRadius: 2,
+    },
+    segmentText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    segmentTextActive: {
+      color: colors.white,
+      fontWeight: '700',
+    },
+  });
+}

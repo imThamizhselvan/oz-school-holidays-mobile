@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import type { PublicHoliday } from '../data/types';
-import { colors, spacing, radius } from '../constants/theme';
+import { useTheme } from '../hooks/useTheme';
+import { spacing, radius } from '../constants/theme';
 
 interface Props {
   holiday: PublicHoliday;
@@ -18,6 +19,9 @@ function formatDate(dateStr: string): string {
 }
 
 export function PublicHolidayItem({ holiday, stateColor }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <View style={styles.item}>
       <View style={styles.dateCol}>
@@ -43,39 +47,41 @@ export function PublicHolidayItem({ holiday, stateColor }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  dateCol: {
-    width: 100,
-  },
-  dateText: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  nameCol: {
-    flex: 1,
-    paddingHorizontal: spacing.sm,
-  },
-  nameText: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: radius.sm,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-});
+function makeStyles(colors: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    item: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    dateCol: {
+      width: 100,
+    },
+    dateText: {
+      fontSize: 13,
+      color: colors.textSecondary,
+      fontWeight: '500',
+    },
+    nameCol: {
+      flex: 1,
+      paddingHorizontal: spacing.sm,
+    },
+    nameText: {
+      fontSize: 14,
+      color: colors.text,
+      fontWeight: '500',
+    },
+    badge: {
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: radius.sm,
+    },
+    badgeText: {
+      fontSize: 11,
+      fontWeight: '600',
+    },
+  });
+}
